@@ -4,29 +4,30 @@ import { BaseEntity, Column, Entity, PrimaryColumn, UpdateDateColumn } from "typ
 export class Score extends BaseEntity
 {
     @PrimaryColumn({name : 'user_id'})
-    userId : number;
+    userId : string;
 
     @PrimaryColumn({name : 'course_id'})
     courseId : number;
 
-    @Column({name : 'daily_score'})
+    @Column({name : 'daily_score',default : 0})
     dailyScore : number;
     
-    @Column({name : 'week_score'})
+    @Column({name : 'week_score',default : 0})
     weekScore : number;
 
-    @Column({name : 'month_score'})
+    @Column({name : 'month_score',default : 0})
     monthScore : number;
 
-    @Column({name : 'total'})
+    @Column({name : 'total',default : 0})
     totalScore : number;
 
     @UpdateDateColumn({
         name : 'last_studied',
-        default : 'now()'
+        default : 'now()',
+        nullable : true
     })
     lastStudied : Date;
 
-    @Column({name : 'streak'})
+    @Column({name : 'streak',nullable : true})
     streak : number;
 }

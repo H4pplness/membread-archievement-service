@@ -10,6 +10,12 @@ export class AppController implements OnModuleInit{
     console.log("REPLICATION : ",hello);
   }
 
+  @Get('')
+  get()
+  {
+    return "HELLO";
+  }
+
   async onModuleInit() {
   }
 }

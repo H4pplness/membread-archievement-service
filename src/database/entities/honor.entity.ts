@@ -1,13 +1,14 @@
 import { BaseEntity, Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { HONOR } from "../const/honor.const";
 
 @Entity()
 export class Honor extends BaseEntity {
-    @PrimaryColumn({name : 'user_id'})
-    userId : number;
+    @PrimaryGeneratedColumn('uuid')
+    id : string;
 
-    @PrimaryColumn({name : 'honor_id'})
-    honorId : number;
+    @Column({name : 'user_id',nullable : false})
+    userId : string;
 
-    @Column({name : 'honor'})
-    honor : string;
+    @Column({name : 'honor',type:'enum',enum : HONOR,default : HONOR.NONE})
+    honor : HONOR;
 }
