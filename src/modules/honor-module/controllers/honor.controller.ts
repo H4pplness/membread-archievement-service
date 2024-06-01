@@ -30,4 +30,14 @@ export class HonorController {
     async getStreak(data : {userId : string,courseId : number}){
         return await this.honorService.getStreak(data.userId,data.courseId);
     }
+
+    @MessagePattern('set-goal')
+    async setGoal(data : {userId : string , goal : number}){
+        return await this.honorService.setGoal(data.userId,data.goal);
+    }
+
+    @MessagePattern('get-goal')
+    async getGoal(data : {userId : string}){
+        return await this.honorService.getGoal(data.userId);
+    }
 }

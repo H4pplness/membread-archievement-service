@@ -3,12 +3,15 @@ import { HonorRepository } from "../repositories/honor.repository";
 import { AchieveHonorDTO } from "src/dtos/achievehonor.dto";
 import { HONOR } from "src/database/const/honor.const";
 import { LessonResultRepository } from "src/modules/score-statistics-module/repositories/lessonresult.repository";
+import { GoalRepository } from "../repositories/goal.repository";
+import { Goal } from "src/database/entities/goal.entity";
 
 @Injectable()
 export class HonorService {
     constructor(
         private readonly honorRepository: HonorRepository,
-        private readonly lessonResultRepository: LessonResultRepository
+        private readonly lessonResultRepository: LessonResultRepository,
+        private readonly goalRepository: GoalRepository
     ) { }
 
     async getUserHonor(userId: string) {
@@ -48,8 +51,39 @@ export class HonorService {
         }
     }
 
-    async getStreak(userId : string,courseId : number)
-    {
-        return await this.lessonResultRepository.getStreak(userId,courseId);
+    async getStreak(userId: string, courseId: number) {
+        return await this.lessonResultRepository.getStreak(userId, courseId);
+    }
+
+    async getGoal(userId: string) {
+        const goal = await this.goalRepository.findOne({
+            where: {
+                userId: userId
+            }
+        });
+
+        return { goal: goal.goal } ?? { goal: 20000 };
+    }
+
+    async setGoal(userId: string, goal: number) {
+        var goalInstance = await this.goalRepository.findOne({
+            where: {
+                userId: userId
+            }
+        });
+
+        if (goalInstance == null) {
+            var newGoal = new Goal();
+            newGoal.userId = userId;
+            newGoal.goal = goal;
+
+            await newGoal.save();
+        } else {
+            goalInstance.goal = goal;
+
+            await goalInstance.save();
+        }
+
+        return "Update success !";
     }
 }

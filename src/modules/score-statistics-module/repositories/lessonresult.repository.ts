@@ -61,34 +61,96 @@ export class LessonResultRepository extends Repository<Score> {
     }
 
     async getLeaderBoardInCourse(courseId: number) {
-        return await this.scoreRepository.find({
-            select: ["dailyScore", "userId"],
+        const today = new Date();
+
+        const leaderBoard = await this.scoreRepository.find({
+            select: ["dailyScore", "userId" , "lastStudied"],
             where: { courseId: courseId },
             order: { dailyScore: 'DESC' }
         });
+
+        return leaderBoard.map(userScore => {
+            if (
+                userScore.lastStudied.getDate() === today.getDate() &&
+                userScore.lastStudied.getMonth() === today.getMonth() &&
+                userScore.lastStudied.getFullYear() === today.getFullYear()
+            ) {
+                const {dailyScore,...info} = userScore;
+                return { ...info, score: dailyScore };
+            } else {
+                const {dailyScore,...info} = userScore;
+                return { ...info, score: 0 };
+            }
+        });
+    }
+
+
+    private getWeek(date: Date): { year: number, week: number } {
+        const tempDate = new Date(date.getTime());
+        tempDate.setUTCDate(tempDate.getUTCDate() + 4 - (tempDate.getUTCDay() || 7));
+        const yearStart = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 1));
+        const weekNo = Math.ceil((((+tempDate - +yearStart) / 86400000) + 1) / 7);
+        return { year: tempDate.getUTCFullYear(), week: weekNo };
     }
 
     async getLeaderBoardInCourseByWeek(courseId: number) {
-        return await this.scoreRepository.find({
-            select: ["weekScore", "userId"],
+        const leaderBoard = await this.scoreRepository.find({
+            select: ["weekScore", "userId","lastStudied"],
             where: { courseId: courseId },
             order: { weekScore: 'DESC' }
+        });
+
+        const today = new Date();
+        const todayWeek = this.getWeek(today);
+
+        return leaderBoard.map(userScore => {
+            const lastStudiedWeek = this.getWeek(userScore.lastStudied);
+            if (
+                todayWeek.week == lastStudiedWeek.week &&
+                userScore.lastStudied.getFullYear() === today.getFullYear()
+            ) {
+                const {weekScore , ...info} = userScore;
+                return {...info,score : weekScore};
+            } else {
+                const {weekScore , ...info} = userScore;
+                return {...info,score : 0};
+            }
         });
     }
 
     async getLeaderBoardInCourseByMonth(courseId: number) {
-        return await this.scoreRepository.find({
-            select: ["monthScore", "userId"],
+        const leaderBoard = await this.scoreRepository.find({
+            select: ["monthScore", "userId","lastStudied"],
             where: { courseId: courseId },
             order: { monthScore: 'DESC' }
+        });
+
+        const today = new Date();
+
+        return leaderBoard.map(userScore => {
+            if (
+                userScore.lastStudied.getMonth() === today.getMonth() &&
+                userScore.lastStudied.getFullYear() === today.getFullYear()
+            ) {
+                const {monthScore , ...info} = userScore;
+                return {...info,score : monthScore};
+            } else {
+                const {monthScore , ...info} = userScore;
+                return {...info,score : 0};
+            }
         });
     }
 
     async getLeaderBoardInCourseAllTime(courseId: number) {
-        return await this.scoreRepository.find({
+        const leaderBoard = await this.scoreRepository.find({
             select: ["totalScore", "userId"],
             where: { courseId: courseId },
             order: { totalScore: 'DESC' }
+        });
+
+        return leaderBoard.map((userScore)=>{
+            const {totalScore , ...info} = userScore;
+            return {...info , score : totalScore};
         });
     }
 

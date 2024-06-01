@@ -6,10 +6,12 @@ import { HonorRepository } from "./repositories/honor.repository";
 import { HonorService } from "./services/honor.service";
 import { HonorController } from "./controllers/honor.controller";
 import { ScoreStatisticsModule } from "../score-statistics-module/scorestatistics.module";
+import { GoalRepository } from "./repositories/goal.repository";
+import { Goal } from "src/database/entities/goal.entity";
 
 @Module({
-    imports : [TypeOrmModule.forFeature([Honor,Score]),ScoreStatisticsModule],
-    providers : [HonorRepository,HonorService],
+    imports : [TypeOrmModule.forFeature([Honor,Score,Goal]),ScoreStatisticsModule],
+    providers : [HonorRepository,HonorService,GoalRepository],
     controllers : [HonorController],
     exports : [HonorService]
 })
