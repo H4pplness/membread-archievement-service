@@ -10,6 +10,6 @@ import { Honor } from "src/database/entities/honor.entity";
     imports : [TypeOrmModule.forFeature([Score,Honor])],
     controllers : [LessonResultController],
     providers : [LessonResultRepository,LessonResultService],
-    exports : [LessonResultRepository]
+    exports : [LessonResultRepository,LessonResultService]
 })
 export class ScoreStatisticsModule {}

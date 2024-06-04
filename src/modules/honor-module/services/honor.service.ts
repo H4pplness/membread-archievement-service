@@ -62,7 +62,7 @@ export class HonorService {
             }
         });
 
-        return { goal: goal.goal } ?? { goal: 20000 };
+        return goal?.goal??20000;
     }
 
     async setGoal(userId: string, goal: number) {

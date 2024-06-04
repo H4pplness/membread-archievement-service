@@ -19,12 +19,7 @@ export class LessonResultController {
         return this.lessonResultService.getLeaderBoardByCourseId(data.courseId,data.period);
     }
 
-    @MessagePattern('get-daily-score')
-    async getDaitlyScore(data : {userId : string}){
-        const response = await this.lessonResultService.getDailyScore(data.userId);
-        console.log("RESPONSE : ",response);
-        return response;
-    }
+    
 
     @MessagePattern('get-total-score')
     getTotalScore(data : {userId : string}){

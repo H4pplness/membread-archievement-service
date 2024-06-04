@@ -64,7 +64,7 @@ export class LessonResultRepository extends Repository<Score> {
         const today = new Date();
 
         const leaderBoard = await this.scoreRepository.find({
-            select: ["dailyScore", "userId" , "lastStudied"],
+            select: ["dailyScore", "userId", "lastStudied"],
             where: { courseId: courseId },
             order: { dailyScore: 'DESC' }
         });
@@ -75,10 +75,10 @@ export class LessonResultRepository extends Repository<Score> {
                 userScore.lastStudied.getMonth() === today.getMonth() &&
                 userScore.lastStudied.getFullYear() === today.getFullYear()
             ) {
-                const {dailyScore,...info} = userScore;
+                const { dailyScore, ...info } = userScore;
                 return { ...info, score: dailyScore };
             } else {
-                const {dailyScore,...info} = userScore;
+                const { dailyScore, ...info } = userScore;
                 return { ...info, score: 0 };
             }
         });
@@ -95,7 +95,7 @@ export class LessonResultRepository extends Repository<Score> {
 
     async getLeaderBoardInCourseByWeek(courseId: number) {
         const leaderBoard = await this.scoreRepository.find({
-            select: ["weekScore", "userId","lastStudied"],
+            select: ["weekScore", "userId", "lastStudied"],
             where: { courseId: courseId },
             order: { weekScore: 'DESC' }
         });
@@ -109,18 +109,18 @@ export class LessonResultRepository extends Repository<Score> {
                 todayWeek.week == lastStudiedWeek.week &&
                 userScore.lastStudied.getFullYear() === today.getFullYear()
             ) {
-                const {weekScore , ...info} = userScore;
-                return {...info,score : weekScore};
+                const { weekScore, ...info } = userScore;
+                return { ...info, score: weekScore };
             } else {
-                const {weekScore , ...info} = userScore;
-                return {...info,score : 0};
+                const { weekScore, ...info } = userScore;
+                return { ...info, score: 0 };
             }
         });
     }
 
     async getLeaderBoardInCourseByMonth(courseId: number) {
         const leaderBoard = await this.scoreRepository.find({
-            select: ["monthScore", "userId","lastStudied"],
+            select: ["monthScore", "userId", "lastStudied"],
             where: { courseId: courseId },
             order: { monthScore: 'DESC' }
         });
@@ -132,11 +132,11 @@ export class LessonResultRepository extends Repository<Score> {
                 userScore.lastStudied.getMonth() === today.getMonth() &&
                 userScore.lastStudied.getFullYear() === today.getFullYear()
             ) {
-                const {monthScore , ...info} = userScore;
-                return {...info,score : monthScore};
+                const { monthScore, ...info } = userScore;
+                return { ...info, score: monthScore };
             } else {
-                const {monthScore , ...info} = userScore;
-                return {...info,score : 0};
+                const { monthScore, ...info } = userScore;
+                return { ...info, score: 0 };
             }
         });
     }
@@ -148,9 +148,9 @@ export class LessonResultRepository extends Repository<Score> {
             order: { totalScore: 'DESC' }
         });
 
-        return leaderBoard.map((userScore)=>{
-            const {totalScore , ...info} = userScore;
-            return {...info , score : totalScore};
+        return leaderBoard.map((userScore) => {
+            const { totalScore, ...info } = userScore;
+            return { ...info, score: totalScore };
         });
     }
 
@@ -185,15 +185,18 @@ export class LessonResultRepository extends Repository<Score> {
         today.setHours(0, 0, 0, 0);
 
         const score = await this.dataSource.createQueryBuilder(Score, 'score')
-            .select('user_id as userId ,SUM(daily_score) as dailyScore')
+            .select('user_id as userId ,SUM(daily_score) as dailyscore')
             .where('user_id = :userId', { userId })
             .andWhere('DATE(last_studied) = CURRENT_DATE')
             .groupBy('user_id')
             .getRawOne();
         console.log("SCORE : ", score);
-        return score??{
+        return score != null ? {
             userId,
-            dailyScore : 0
+            dailyScore: parseInt(score.dailyscore)
+        } : {
+            userId,
+            dailyScore: 0
         };
     }
 }

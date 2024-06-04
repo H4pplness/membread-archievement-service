@@ -2,11 +2,13 @@ import { Body, Controller, Get, Post, Query } from "@nestjs/common";
 import { HonorService } from "../services/honor.service";
 import { AchieveHonorDTO } from "src/dtos/achievehonor.dto";
 import { MessagePattern, RpcException } from "@nestjs/microservices";
+import { LessonResultService } from "src/modules/score-statistics-module/services/lessonresult.service";
 
 @Controller()
 export class HonorController {
     constructor(
-        private readonly honorService : HonorService
+        private readonly honorService : HonorService,
+        private readonly lessonResultService : LessonResultService
     ){}
     
     @MessagePattern('get-user-honor')
@@ -39,5 +41,11 @@ export class HonorController {
     @MessagePattern('get-goal')
     async getGoal(data : {userId : string}){
         return await this.honorService.getGoal(data.userId);
+    }
+
+    @MessagePattern('get-daily-score')
+    async getDaitlyScore(data : {userId : string}){
+        const [response,goal] = await Promise.all([this.lessonResultService.getDailyScore(data.userId),this.honorService.getGoal(data.userId)]);
+        return {...response,goal : goal};
     }
 }
